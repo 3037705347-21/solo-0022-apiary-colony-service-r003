@@ -91,6 +91,21 @@ go run ./cmd/check -workflow advance-hive-state
 go run ./cmd/check -workflow read-apiary-status
 ```
 
+单个 workflow 校验通过时输出 `workflow <id> ok` 并以 0 退出；失败时在 stderr
+输出失败原因并以 1 退出；传入未知 workflow 以 2 退出。
+
+需要统一汇总时，使用聚合校验入口顺序运行全部 workflow：
+
+```bash
+go run ./cmd/check -all
+```
+
+聚合入口按固定顺序逐个执行六个 workflow，输出每个 workflow 的通过或失败
+（失败时标注失败阶段与原因），最后给出整体结论；全部通过时以 0 退出，
+任一 workflow 失败时其余 workflow 仍会继续执行，最终以 1 退出。
+每个 workflow 都在全新启动的内存服务上执行，校验结束后服务立即关闭释放，
+因此重复运行得到稳定可比较的汇总。
+
 ## 测试边界
 
 本项目按初始化基线交付，**测试刻意推迟**：不包含单元测试、测试夹具或浏览器端校验文件，
