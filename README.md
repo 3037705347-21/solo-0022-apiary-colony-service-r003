@@ -91,6 +91,17 @@ go run ./cmd/check -workflow advance-hive-state
 go run ./cmd/check -workflow read-apiary-status
 ```
 
+也可以用聚合入口顺序运行全部 workflow。每个 workflow 都会启动一个全新的服务实例，
+校验结束后立即关闭并等待监听端口与 goroutine 释放，因此重复运行得到稳定可比较的汇总；
+任一 workflow 失败时进程以非零退出码结束（单个 workflow 未知时退出码仍为 2）：
+
+```bash
+go run ./cmd/check -all
+```
+
+聚合运行结束时会逐条列出每个 workflow 的 `PASS`/`FAIL` 及失败原因，并给出
+`整体结论：PASS|FAIL（N/6 通过）`。即使中途有 workflow 失败，也会继续跑完其余项后再统一汇总。
+
 ## 测试边界
 
 本项目按初始化基线交付，**测试刻意推迟**：不包含单元测试、测试夹具或浏览器端校验文件，
